@@ -1,0 +1,61 @@
+﻿<Page
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:SistemaFichajeWPF_01"
+      xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+      x:Class="SistemaFichajeWPF.CalendarioLaboral"
+      mc:Ignorable="d" 
+      d:DesignHeight="800       " d:DesignWidth="800"
+      Title="CalendarioLaboral"
+      DataContext="{Binding RelativeSource={RelativeSource Self}}">
+
+    <Grid x:Name="grid">
+        <Grid.RowDefinitions>
+            <RowDefinition x:Name="gridFirstRow"/>
+            <RowDefinition/>
+            <RowDefinition x:Name="gridSecondRow"/>
+            <RowDefinition x:Name="gridThirdRow"/>
+            <RowDefinition x:Name="gridFourthRow"/>
+            <RowDefinition x:Name="gridFifthRow"/>
+            <RowDefinition x:Name="gridSixthRow"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="gridFirstColumn" Width="3*"/>
+            <ColumnDefinition x:Name="gridSecondColumn"/>
+        </Grid.ColumnDefinitions>
+        <ListView x:Name="lvFestivos" FontSize="16" ItemsSource="{Binding ListaFestivos}" SelectionMode="Single" Grid.RowSpan="7" Margin="10" Foreground="Black">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Fechas festivos" Width="{Binding ActualWidth, ElementName=lvFestivos}" DisplayMemberBinding="{Binding Fecha, ConverterCulture=es-ES, StringFormat=\{0:dddd\, dd MMMM\}}" />
+                </GridView>
+            </ListView.View>
+            <i:Interaction.Behaviors>
+                <local:AutoScrollToLastItemBehavior />
+            </i:Interaction.Behaviors>
+        </ListView>
+
+        <DatePicker x:Name="dpFestivos" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" SelectedDateFormat="Long" Grid.Column="1" Width="200" Height="30" FontSize="18"/>
+        <Button x:Name="btAñadir" Content="Añadir" Height="50" Margin="30,0,0,0" VerticalAlignment="Center" Width="100" FontSize="18" Click="BtAñadir_Click" 
+                Grid.Column="1" Grid.Row="1"/>
+        <Button x:Name="btEliminar" Content="Eliminar" Height="50" Margin="30,0,0,0" VerticalAlignment="Center" Width="100" Grid.Column="1" Grid.Row="2" FontSize="18" 
+                Click="BtEliminar_Click"/>
+        <Button x:Name="btAñadirSabDom" HorizontalAlignment="Left" Margin="30,0,0,0" VerticalAlignment="Center" Grid.Column="1" Height="50" FontSize="16" 
+                Width="120" Click="BtAñadirSabDom_Click" Grid.Row="3">
+            <Border BorderBrush="{x:Null}" Height="Auto">
+                <TextBlock Text="Añadir Fines de Semana" TextWrapping="Wrap" Width="110" TextAlignment="Center" Height="44" />
+            </Border>
+        </Button>
+        <Button x:Name="btVaciar" Content="Vaciar" Height="50" Margin="30,0,0,0" VerticalAlignment="Center" Width="100" Grid.Row="4" Grid.Column="1" FontSize="18" 
+                Click="BtVaciar_Click"/>
+        <Button x:Name="btCalculoLaborables" Height="50" VerticalAlignment="Center" Grid.Column="1" Grid.Row="5" FontSize="18"
+                Width="120" Margin="30,0,0,0" Click="BtCalculoLaborables_Click">
+            <Border BorderBrush="{x:Null}" Height="Auto">
+                <TextBlock Text="Calcular Laborables" TextWrapping="Wrap" Width="110" TextAlignment="Center" Height="44" />
+            </Border>
+        </Button>
+        <TextBlock x:Name="tbInfo" Grid.Column="1" HorizontalAlignment="Left" Margin="10" Grid.Row="6" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" FontSize="16" 
+                   Visibility="Collapsed" Foreground="#1e2022"/>
+    </Grid>
+</Page>

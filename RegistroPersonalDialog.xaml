@@ -1,0 +1,46 @@
+﻿<Window x:Class="SistemaFichajeWPF.RegistroPersonalDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="RegistroPersonalDialog" Height="450" Width="800"
+        Background="#c9d6df" WindowStyle="None" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#1e2022"/>
+        </Style>
+    </Window.Resources>
+    
+    <DockPanel>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <TextBlock HorizontalAlignment="Left" Margin="30,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" Grid.ColumnSpan="3" FontSize="14"><Run Text="Rellene los siguientes campos para completar el registro."/><LineBreak/><Run Text="No es obligatorio registrar una tarjeta en este momento."/></TextBlock>
+            <TextBlock HorizontalAlignment="Left" Margin="150,0,0,0" Grid.Row="1" TextWrapping="Wrap" Text="Nombre" VerticalAlignment="Center" FontSize="16"/>
+            <TextBlock HorizontalAlignment="Left" Margin="150,0,0,0" Grid.Row="2" TextWrapping="Wrap" VerticalAlignment="Center" Text="Horas Semanales" FontSize="16"/>
+            <TextBlock HorizontalAlignment="Left" Margin="150,0,0,0" Grid.Row="3" TextWrapping="Wrap" Text="Horas anuales" VerticalAlignment="Center" FontSize="16"/>
+            <TextBlock HorizontalAlignment="Left" Margin="150,0,0,0" Grid.Row="4" TextWrapping="Wrap" Text="Número de Tarjeta" VerticalAlignment="Center" FontSize="16"/>
+            <Button x:Name="btLeerTarjeta" Content="Leer tarjeta" Grid.Column="1" HorizontalAlignment="Left" Margin="28,0,0,0" Grid.Row="5" VerticalAlignment="Center" Width="100" Height="30" Click="BtLeerTarjeta_Click" FontSize="16"/>
+            <Button x:Name="btEliminarTarjeta" Content="Eliminar" Grid.Column="1" HorizontalAlignment="Left" Margin="140,0,0,0" Grid.Row="5" VerticalAlignment="Center" Width="100" Height="30" Click="BtEliminarTarjeta_Click" FontSize="16"/>
+            <Button x:Name="btRegistrar" Content="Registrar" Grid.Column="2" HorizontalAlignment="Left" Margin="28,0,0,0" Grid.Row="5" VerticalAlignment="Center" Width="100" Height="30" Click="BtRegistrar_Click" FontSize="16"/>
+            <Button x:Name="btCancelar" IsCancel="True" Content="Cancelar" Grid.Column="2" HorizontalAlignment="Left" Margin="140,0,0,0" Grid.Row="5" VerticalAlignment="Center" Width="100" Height="30" FontSize="16"/>
+            <TextBox x:Name="tbNombre" Grid.Column="1" HorizontalAlignment="Left" Margin="0" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Center" Width="200" FontSize="16"/>
+            <TextBox x:Name="tbHorasSemanales" Grid.Column="1" HorizontalAlignment="Left" Margin="0" Grid.Row="2" TextWrapping="Wrap" VerticalAlignment="Center" Width="70" FontSize="16"/>
+            <TextBox x:Name="tbHorasAnuales" Grid.Column="1" HorizontalAlignment="Left" Margin="0" Grid.Row="3" TextWrapping="Wrap" VerticalAlignment="Center" Width="70" FontSize="16"/>
+            <TextBlock x:Name="tblNumTarjeta" Grid.Column="1" HorizontalAlignment="Left" Margin="0" Grid.Row="4" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="16"><Run/><LineBreak/><Run/></TextBlock>
+            <TextBlock x:Name="tbInfo" Grid.Column="2" HorizontalAlignment="Left" Margin="28,0,0,0" Grid.Row="4" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="14" Visibility="Collapsed"/>
+        </Grid>
+    </DockPanel>
+</Window>

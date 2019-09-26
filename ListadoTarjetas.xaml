@@ -1,0 +1,34 @@
+﻿<Page x:Class="SistemaFichajeWPF.ListadoTarjetas"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:SistemaFichajeWPF"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="ListadoTarjetas"
+      DataContext="{Binding RelativeSource={RelativeSource Self}}">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <ListView Name="lvTarjetas" SelectionMode="Single" FontSize="16" Grid.RowSpan="6" Margin="10">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="ID" DisplayMemberBinding="{Binding Id}"/>
+                    <GridViewColumn Header="Usuario" DisplayMemberBinding="{Binding Personal.Nombre}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Height="50" Margin="30,15,0,0" TextWrapping="Wrap" Text="Núm Tarjeta:" VerticalAlignment="Top" Width="70" FontSize="18" Foreground="#1e2022"/>
+        <TextBlock x:Name="tbNumTarjeta" Grid.Column="1" HorizontalAlignment="Left" Margin="100,15,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="18"  Foreground="#1e2022"/>
+        <Button x:Name="btLeerTarjeta" Content="Leer Tarjeta" Grid.Column="1" HorizontalAlignment="Left" Height="50" Margin="30,76,0,0" Grid.Row="1" VerticalAlignment="Top" Width="100" FontSize="18" Click="BtLeerTarjeta_Click"/>
+        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="30,140,0,0" Grid.Row="2" TextWrapping="Wrap" Text="Usuario:" VerticalAlignment="Top" FontSize="18" Foreground="#1e2022"/>
+        <ComboBox x:Name="cbListaPersonal" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="105,140,0,0" Grid.Row="2" VerticalAlignment="Top" Width="122" FontSize="16"/>
+        <Button x:Name="btVincular" Content="Vincular" Grid.Column="1" HorizontalAlignment="Left" Height="50" Margin="30,190,0,0" Grid.Row="3" VerticalAlignment="Top" Width="100" FontSize="18" Click="BtVincular_Click"/>
+        <Button x:Name="btDesvincular" Content="Desvincular" Grid.Column="1" HorizontalAlignment="Left" Height="50" Margin="30,260,0,0" VerticalAlignment="Top" Width="100" Click="BtDesvincular_Click" FontSize="18" Grid.Row="4"/>
+        <TextBlock x:Name="tbInfo" HorizontalAlignment="Left" Margin="30,340,0,0" Grid.Row="6" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="18" Visibility="Collapsed" Grid.Column="1" Foreground="#1e2022"/>
+    </Grid>
+</Page>

@@ -1,0 +1,81 @@
+﻿<Page x:Class="SistemaFichajeWPF.Fichaje"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      mc:Ignorable="d" 
+      d:DesignHeight="1500" d:DesignWidth="1500"
+      Title="Fichaje">
+    <Page.Resources>
+        <Style x:Key="ButtonStyle2" TargetType="{x:Type Button}">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
+            <Setter Property="Background" Value="#dfd3d3"/>
+            <Setter Property="BorderBrush" Value="#dfd3d3"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="1"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="true">
+                            <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsDefaulted" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="#dfd3d3"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="#dfd3d3"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="#dfd3d3"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="#dfd3d3"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Background" TargetName="border" Value="#b8b0b0"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="#b8b0b0"/>
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="#7c7575"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Page.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Button x:Name="btEntrada" Content="Entrada" HorizontalAlignment="Center" Height="90" Margin="0" VerticalAlignment="Center" Width="210" 
+                    Click="BtEntrada_Click" FontSize="24" Style="{DynamicResource ButtonStyle2}"/>
+            <Button x:Name="btSalida" Content="Salida" HorizontalAlignment="Center" Height="90" Margin="0" VerticalAlignment="Center" Width="210" Grid.Column="1" 
+                    Click="BtSalida_Click" FontSize="24" Style="{DynamicResource ButtonStyle2}"/>
+            <Button x:Name="btDescansoEntrada" Content="Descanso (Entrada)" HorizontalAlignment="Center" Height="90" Margin="0" VerticalAlignment="Center" Width="210" Grid.Row="1" 
+                    Grid.Column="1" Click="BtDescansoEntrada_Click" FontSize="24" Style="{DynamicResource ButtonStyle2}"/>
+            <Button x:Name="btDescansoSalida" Content="Descanso (Salida)" HorizontalAlignment="Center" Height="90" Margin="0" VerticalAlignment="Center" Width="210" Grid.Row="1" 
+                    Click="BtDescansoSalida_Click" FontSize="24" Style="{DynamicResource ButtonStyle2}"/>
+            <Button x:Name="btComidaSalida" Content="Comida (Salida)" HorizontalAlignment="Center" Height="90" Margin="0" VerticalAlignment="Center" Width="210" Grid.Row="2" FontSize="24" 
+                    Click="BtComidaSalida_Click" Style="{DynamicResource ButtonStyle2}"/>
+            <Button x:Name="btComidaEntrada" Content="Comida (Entrada)" HorizontalAlignment="Center" Height="90" Margin="0" VerticalAlignment="Center" Width="210" Grid.Row="2" Grid.Column="1" 
+                    FontSize="24" Click="BtComidaEntrada_Click" Style="{DynamicResource ButtonStyle2}"/>
+        </Grid>
+    </Grid>
+</Page>
