@@ -25,8 +25,8 @@ namespace SistemaFichajeWPF
         {
             InitializeComponent();
 
-            LectorTarjetas.LimpiaPantallaLCD();
-            _ListaPersonal = AccessHelper.LeerDatosPersonal();
+            LectorTarjetas.ClearScreen();
+            _ListaPersonal = SQLiteDatabase.LeerDatosPersonal();
 
             #region Inicialización Timer
             timerLabel = new DispatcherTimer
@@ -57,7 +57,7 @@ namespace SistemaFichajeWPF
 
             if (selectedPersonal != null)
             {
-                if (AccessHelper.EliminaPersonal(selectedPersonal.Id))
+                if (SQLiteDatabase.EliminaPersonal(selectedPersonal.Id))
                 {
                     // Borra el usuario de la lista de personal
                     _ListaPersonal.Remove(
@@ -92,7 +92,7 @@ namespace SistemaFichajeWPF
             {
                 Personal personal = registroPersonal.Resultado;
 
-                int resultCode = AccessHelper.InsertaNuevoPersonal(personal.Nombre, personal.HorasSemanales, personal.HorasAnuales, personal.Tarjeta);
+                int resultCode = SQLiteDatabase.InsertaNuevoPersonal(personal.Nombre, personal.HorasSemanales, personal.HorasAnuales, personal.Tarjeta);
 
                 if (resultCode >= 0)
                 {

@@ -25,10 +25,10 @@ namespace SistemaFichajeWPF
         public CalendarioLaboral()
         {
             InitializeComponent();
-            LectorTarjetas.LimpiaPantallaLCD();
+            LectorTarjetas.ClearScreen();
 
             Cursor = Cursors.Wait;
-            _ListaFestivos = AccessHelper.LeerDatosCalendario();
+            _ListaFestivos = SQLiteDatabase.LeerDatosCalendario();
             Cursor = Cursors.Arrow;
 
             #region Inicialización Timer
@@ -63,7 +63,7 @@ namespace SistemaFichajeWPF
             if (dpFestivos.SelectedDate != null)
             {
                 DateTime date = (DateTime)dpFestivos.SelectedDate;
-                if (AccessHelper.InsertaNuevoDiaFestivo(date.Date))
+                if (SQLiteDatabase.InsertaNuevoDiaFestivo(date.Date))
                 {
                     _ListaFestivos.Add(new FechaFestivo(date.Date));
                 }               
@@ -88,7 +88,7 @@ namespace SistemaFichajeWPF
             if (lvFestivos.SelectedItem != null) //(FechaFestivo)
             {
                 DateTime date = ((FechaFestivo)lvFestivos.SelectedItem).Fecha;
-                if (AccessHelper.EliminaDiaFestivo(date.Date))
+                if (SQLiteDatabase.EliminaDiaFestivo(date.Date))
                 {
                     _ListaFestivos.Remove((FechaFestivo)lvFestivos.SelectedItem);
                 }                
@@ -110,7 +110,7 @@ namespace SistemaFichajeWPF
                 bool couldErase = false;
                 foreach (FechaFestivo fechaFestivo in lvFestivos.Items)
                 {
-                    couldErase = AccessHelper.EliminaDiaFestivo(fechaFestivo.Fecha.Date);
+                    couldErase = SQLiteDatabase.EliminaDiaFestivo(fechaFestivo.Fecha.Date);
                     if (!couldErase) break;
                 }
 
@@ -154,7 +154,7 @@ namespace SistemaFichajeWPF
             {
                 if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
                 {
-                    if (AccessHelper.InsertaNuevoDiaFestivo(date.Date))
+                    if (SQLiteDatabase.InsertaNuevoDiaFestivo(date.Date))
                     {
                         Dispatcher.Invoke(() =>
                         {

@@ -16,7 +16,7 @@ namespace SistemaFichajeWPF
         public Fichaje()
         {
             InitializeComponent();
-            LectorTarjetas.LimpiaPantallaLCD();
+            LectorTarjetas.ClearScreen();
         }
         #endregion
 
@@ -73,11 +73,11 @@ namespace SistemaFichajeWPF
         #region LecturaTarjetaRegistroHistorial
         private async void LecturaTarjetaRegistroHistorial(TipoRegistro tipoRegistro)
         {
-            LectorTarjetas.MuestraMensajeLCD("Por favor, pase la tarjeta");
+            LectorTarjetas.ShowMessageOnScreen("Por favor, pase la tarjeta");
 
             CancellationTokenSource source = new CancellationTokenSource();
             source.CancelAfter(TimeSpan.FromSeconds(10)); // Timeout de 10 segundos
-            Task<long> leeTarjeta = Task.Run(() => LectorTarjetas.LecturaTarjeta(source.Token), source.Token);
+            Task<long> leeTarjeta = Task.Run(() => LectorTarjetas.ReadCard(source.Token), source.Token);
 
             btEntrada.IsEnabled = false;
             btSalida.IsEnabled = false;
@@ -92,12 +92,12 @@ namespace SistemaFichajeWPF
             // Inserta los datos del registro en la BD
             if (numTarjeta != -1)
             {
-                AccessHelper.InsertaNuevoRegistroHistorial(numTarjeta, tipoRegistro);
+                SQLiteDatabase.InsertaNuevoRegistroHistorial(numTarjeta, tipoRegistro);
 #if DEBUG
                 GlobalData.PrintDebug("SistemaFichaje.cs", "[" + DateTime.Now + "] Se ha leído la tarjeta con número:" + numTarjeta + ".\n");
 #endif
 
-                string nombre = AccessHelper.NombreDePersonalConIDTarjeta(numTarjeta), msg = "";
+                string nombre = SQLiteDatabase.NombreDePersonalConIDTarjeta(numTarjeta), msg = "";
 
                 if (nombre == "null")
                 {
@@ -125,8 +125,8 @@ namespace SistemaFichajeWPF
 #if DEBUG
                 GlobalData.PrintDebug("SistemaFichaje.cs", msg + "\n");
 #endif
-                LectorTarjetas.LimpiaPantallaLCD();
-                LectorTarjetas.MuestraMensajeLCD(msg);
+                LectorTarjetas.ClearScreen();
+                LectorTarjetas.ShowMessageOnScreen(msg);
                 LectorTarjetas.TimerLimpiaPantallaLCD();
             }
             else
@@ -134,8 +134,8 @@ namespace SistemaFichajeWPF
 #if DEBUG
                 GlobalData.PrintDebug("SistemaFichaje.cs", "[" + DateTime.Now + "] No se ha recibido ninguna tarjeta o el formato no es válido.");
 #endif
-                LectorTarjetas.LimpiaPantallaLCD();
-                LectorTarjetas.MuestraMensajeLCD("No se reconoce ID");
+                LectorTarjetas.ClearScreen();
+                LectorTarjetas.ShowMessageOnScreen("No se reconoce ID");
                 LectorTarjetas.TimerLimpiaPantallaLCD();
             }
 

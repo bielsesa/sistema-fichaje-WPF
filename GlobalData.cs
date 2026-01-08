@@ -12,7 +12,7 @@ namespace SistemaFichaje
     public static class GlobalData
     {
         // string con el nombre del archivo de la base de datos
-        public static string ArchivoBD { get; set; } = "\\data.accdb";
+        public static string ArchivoBD { get; set; } = "\\data.sqlite3";
 
         // path al directorio de ensamblaje, para las strings de conexión a las BD
         public static string BuildDir { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);

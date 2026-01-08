@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Threading;
+using SistemaFichaje;
 
 namespace SistemaFichajeWPF_01
 {
@@ -14,6 +15,8 @@ namespace SistemaFichajeWPF_01
         public MainWindow()
         {
             InitializeComponent();
+            
+            SQLiteDatabase.InicializarBaseDeDatos();
 
             tblFecha.Text = String.Format("{0:dddd} {0:dd} de {0:MMMM} de {0:yyyy}", DateTime.Now);
 

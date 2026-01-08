@@ -1,34 +1,47 @@
 ﻿using System;
 using System.Data.OleDb;
 using System.Data;
+using System.IO;
 using System.Windows;
 using System.Collections.ObjectModel;
+using System.Data.SQLite;
 using SistemaFichajeWPF;
 
 namespace SistemaFichaje
 {
-
-    public static class AccessHelper
+    public static class SQLiteDatabase
     {
-        private static string dbConnectionString =
-            "Provider=Microsoft.ACE.OLEDB.12.0; " +
-            "Data Source=" + GlobalData.BuildDir + GlobalData.ArchivoBD +
-            "; Persist Security Info=False;";
+        private static string dbFilePath = GlobalData.BuildDir + GlobalData.ArchivoBD;
+        private static string dbConnectionString = $"Data Source={dbFilePath};Version=3;";
 
-        private static OleDbConnection dbConnection = new OleDbConnection(dbConnectionString);
+        private static SQLiteConnection dbConnection = new SQLiteConnection(dbConnectionString);
 
-        #region Nombres tablas
         private static readonly string TablaTarjeta = "Tarjeta";
         private static readonly string TablaCalendario = "CalendarioLaboral";
-        #endregion
-
+        
+        /// <summary>
+        /// Checks if the database exists; if not, creates the file and the schema.
+        /// </summary>
+        public static void InicializarBaseDeDatos()
+        {
+            if (File.Exists(dbFilePath))
+            {
+                return;
+            }
+            
+            // SQLite automatically creates the file when you open a connection 
+            // if it doesn't exist, but we need to build the tables.
+            SQLiteConnection.CreateFile(dbFilePath);
+            CrearSchema();
+        }
+        
         // Recoge los datos de la lista de personal de la empresa
         #region LeerDatosPersonal
         public static ObservableCollection<Personal> LeerDatosPersonal()
         {
-            ObservableCollection<Personal> listaPersonal = new ObservableCollection<Personal>();
+            var listaPersonal = new ObservableCollection<Personal>();
 
-            OleDbCommand selectCmd = new OleDbCommand
+            var selectCmd = new SQLiteCommand
             {
                 CommandType = CommandType.Text,
                 CommandText = "SELECT * FROM Personal",
@@ -40,19 +53,19 @@ namespace SistemaFichaje
                 if (dbConnection.State != ConnectionState.Open)
                     dbConnection.Open();
 
-                OleDbDataReader dataReader = selectCmd.ExecuteReader();
+                var dataReader = selectCmd.ExecuteReader();
 
                 while (dataReader.Read())
                 {
                     listaPersonal.Add(
-                        new Personal((int)dataReader.GetValue(0),
+                        new Personal(Convert.ToInt32(dataReader.GetValue(0)),
                             dataReader.GetValue(1).ToString())
                         );
                 }
 
                 dbConnection.Close();
             }
-            catch (OleDbException ex)
+            catch (SQLiteException ex)
             {
                 MessageBox.Show("Ha habido un problema en la escritura a la base de datos. " +
                     "No se ha podido insertar la nueva información.", "Error",
@@ -72,15 +85,15 @@ namespace SistemaFichaje
         #region NombreDePersonalConIDTarjeta
         public static string NombreDePersonalConIDTarjeta(long tarjetaId)
         {
-            string nombre = "";
+            var nombre = "";
 
-            OleDbCommand selectPersonalIdCmd = new OleDbCommand
+            var selectPersonalIdCmd = new SQLiteCommand
             {
-                CommandText = String.Format("SELECT PersonalId FROM Tarjeta WHERE TarjetaId LIKE '{0}'", tarjetaId.ToString()),
+                CommandText = $"SELECT PersonalId FROM Tarjeta WHERE TarjetaId LIKE '{tarjetaId.ToString()}'",
                 Connection = dbConnection
             };
 
-            OleDbCommand selectNombreCmd = new OleDbCommand
+            var selectNombreCmd = new SQLiteCommand
             {
                 CommandText = "SELECT PersonalNombre FROM Personal WHERE PersonalId LIKE X",
                 Connection = dbConnection
@@ -91,7 +104,7 @@ namespace SistemaFichaje
                 if (dbConnection.State != ConnectionState.Open)
                     dbConnection.Open();
 
-                OleDbDataReader dataReaderPersonalId = selectPersonalIdCmd.ExecuteReader();
+                var dataReaderPersonalId = selectPersonalIdCmd.ExecuteReader();
 
                 if (dataReaderPersonalId.HasRows)
                 {
@@ -105,7 +118,7 @@ namespace SistemaFichaje
                     return "null";
                 }                
 
-                OleDbDataReader dataReaderNombre = selectNombreCmd.ExecuteReader();
+                var dataReaderNombre = selectNombreCmd.ExecuteReader();
 
                 if (dataReaderNombre.HasRows)
                 {
@@ -154,9 +167,9 @@ namespace SistemaFichaje
         #region NombreDePersonalConIDPersonal
         public static string NombreDePersonalConIDPersonal(int personalId)
         {
-            string nombre = "";
+            var nombre = "";
 
-            OleDbCommand selectNombreCmd = new OleDbCommand
+            var selectNombreCmd = new SQLiteCommand
             {
                 CommandText = String.Format("SELECT PersonalNombre FROM Personal WHERE PersonalId LIKE {0}", personalId),
                 Connection = dbConnection
@@ -167,7 +180,7 @@ namespace SistemaFichaje
                 if (dbConnection.State != ConnectionState.Open)
                     dbConnection.Open();
 
-                OleDbDataReader dataReaderNombre = selectNombreCmd.ExecuteReader();
+                var dataReaderNombre = selectNombreCmd.ExecuteReader();
 
                 if (dataReaderNombre.HasRows)
                 {
@@ -216,16 +229,16 @@ namespace SistemaFichaje
         #region LeerDatosTarjetas
         public static ObservableCollection<Tarjeta> LeerDatosTarjetas()
         {
-            ObservableCollection<Tarjeta> listaTarjetas = new ObservableCollection<Tarjeta>();
+            var listaTarjetas = new ObservableCollection<Tarjeta>();
 
-            OleDbCommand selectTarjetasCmd = new OleDbCommand
+            var selectTarjetasCmd = new SQLiteCommand
             {
                 CommandType = CommandType.Text,
                 CommandText = "SELECT * FROM Tarjeta",
                 Connection = dbConnection
             };
 
-            OleDbCommand selectPersonalCmd = new OleDbCommand
+            var selectPersonalCmd = new SQLiteCommand
             {
                 CommandType = CommandType.Text,
                 CommandText = "SELECT * FROM Personal",
@@ -240,7 +253,7 @@ namespace SistemaFichaje
                 // Lee los resultados de la tabla Tarjetas y crea
                 // la lista, sin los nombres
 
-                OleDbDataReader dataReader = selectTarjetasCmd.ExecuteReader();
+                var dataReader = selectTarjetasCmd.ExecuteReader();
 
                 while (dataReader.Read())
                 {
@@ -259,7 +272,7 @@ namespace SistemaFichaje
 
                 while (dataReader.Read())
                 {
-                    foreach (Tarjeta tarjeta in listaTarjetas)
+                    foreach (var tarjeta in listaTarjetas)
                     {
                         if (tarjeta.Personal.Id == (int)dataReader.GetValue(0))
                         {
@@ -291,7 +304,7 @@ namespace SistemaFichaje
         #region ExisteTarjeta
         public static bool ExisteTarjeta(long tarjeta)
         {
-            OleDbCommand selectTarjetasCmd = new OleDbCommand
+            var selectTarjetasCmd = new SQLiteCommand
             {
                 CommandType = CommandType.Text,
                 CommandText = String.Format("SELECT * FROM {0} WHERE TarjetaId LIKE '{1}'", TablaTarjeta, tarjeta),
@@ -306,7 +319,7 @@ namespace SistemaFichaje
                 // Lee los resultados de la tabla Tarjetas y crea
                 // la lista, sin los nombres
 
-                OleDbDataReader dataReader = selectTarjetasCmd.ExecuteReader();
+                var dataReader = selectTarjetasCmd.ExecuteReader();
 
                 if (dataReader.HasRows)
                 {
@@ -334,9 +347,9 @@ namespace SistemaFichaje
         #region LeerDatosCalendario
         public static ObservableCollection<FechaFestivo> LeerDatosCalendario()
         {
-            ObservableCollection<FechaFestivo> listaDiasFestivos = new ObservableCollection<FechaFestivo>();
+            var listaDiasFestivos = new ObservableCollection<FechaFestivo>();
 
-            OleDbCommand selectCmd = new OleDbCommand
+            var selectCmd = new SQLiteCommand
             {
                 CommandType = CommandType.Text,
                 CommandText = String.Format("SELECT * FROM {0}", TablaCalendario),
@@ -348,7 +361,7 @@ namespace SistemaFichaje
                 if (dbConnection.State != ConnectionState.Open)
                     dbConnection.Open();
 
-                OleDbDataReader dataReader = selectCmd.ExecuteReader();
+                var dataReader = selectCmd.ExecuteReader();
 
                 while (dataReader.Read())
                 {
@@ -378,7 +391,7 @@ namespace SistemaFichaje
         #region EliminaPersonal
         public static bool EliminaPersonal(int personalId)
         {
-            OleDbCommand deleteCmd = new OleDbCommand
+            var deleteCmd = new SQLiteCommand
             {
                 CommandText = String.Format("DELETE FROM Personal WHERE PersonalId = {0}", personalId),
                 Connection = dbConnection
@@ -431,7 +444,7 @@ namespace SistemaFichaje
                 if (dbConnection.State != ConnectionState.Open)
                     dbConnection.Open();
 
-                OleDbCommand deleteCmd = new OleDbCommand
+                var deleteCmd = new SQLiteCommand
                 {
                     CommandText = String.Format("DELETE FROM Tarjeta WHERE TarjetaId = '{0}'", tarjetaId),
                     Connection = dbConnection
@@ -474,9 +487,9 @@ namespace SistemaFichaje
         #region EliminaDiaFestivo
         public static bool EliminaDiaFestivo(DateTime date)
         {
-            OleDbCommand deleteCmd = new OleDbCommand
+            var deleteCmd = new SQLiteCommand
             {
-                CommandText = "DELETE FROM CalendarioLaboral WHERE FechaFestivo = ?",
+                CommandText = "DELETE FROM CalendarioLaboral WHERE FechaFestivo = @Date",
                 Connection = dbConnection
             };
 
@@ -523,17 +536,17 @@ namespace SistemaFichaje
         #region InsertaNuevoRegistroHistorial
         public static bool InsertaNuevoRegistroHistorial(long tarjetaId, TipoRegistro tipoRegistro)
         {
-            OleDbCommand selectCmd = new OleDbCommand
+            var selectCmd = new SQLiteCommand
             {
                 CommandText = String.Format("SELECT PersonalId FROM Tarjeta WHERE TarjetaId LIKE {0}", tarjetaId),
                 Connection = dbConnection
             };
 
-            OleDbCommand insertCmd = new OleDbCommand
+            var insertCmd = new SQLiteCommand
             {
                 CommandType = CommandType.Text,
                 CommandText = String.Format("INSERT INTO Historial (PersonalId, HistorialTimeStamp, HistorialTipo) " +
-                "VALUES (X,Now(),{0})", (int)tipoRegistro),
+                "VALUES (X,datetime('now', 'localtime'),{0})", (int)tipoRegistro),
                 Connection = dbConnection
             };
 
@@ -542,7 +555,7 @@ namespace SistemaFichaje
                 if (dbConnection.State != ConnectionState.Open)
                     dbConnection.Open();
 
-                OleDbDataReader dataReader = selectCmd.ExecuteReader();
+                var dataReader = selectCmd.ExecuteReader();
 
                 if (dataReader.HasRows)
                 {
@@ -585,7 +598,7 @@ namespace SistemaFichaje
         #region InsertaNuevoDiaFestivo
         public static bool InsertaNuevoDiaFestivo(DateTime date)
         {
-            OleDbCommand insertCmd = new OleDbCommand
+            var insertCmd = new SQLiteCommand
             {
                 CommandType = CommandType.Text,
                 CommandText = String.Format("INSERT INTO {0} (FechaFestivo) " +
@@ -639,41 +652,41 @@ namespace SistemaFichaje
             // 2. Tabla Horario: Guarda los horarios y el ID personal
             // 3. Tabla Tarjeta: Guarda el ID de la tarjeta registrada con el usuario 
 
-            #region Declaración OleDbCommands 
-            OleDbCommand insertaPersonalCmd = new OleDbCommand
+            #region Declaración SQLiteCommands 
+            var insertaPersonalCmd = new SQLiteCommand
             {
                 CommandText = String.Format("INSERT INTO Personal (PersonalNombre) VALUES ('{0}')", nombre),
                 Connection = dbConnection
             };
 
-            OleDbCommand insertaHorarioCmd = new OleDbCommand
+            var insertaHorarioCmd = new SQLiteCommand
             {
                 CommandText = String.Format("INSERT INTO Horario (PersonalId, NumHorasSemanales, NumHorasAnuales) VALUES (X, {0}, {1})", hSemanales, hAnuales),
                 Connection = dbConnection
             };
 
-            OleDbCommand insertaTarjetaCmd = null;
+            SQLiteCommand insertaTarjetaCmd = null;
 
             if (idTarjeta != "")
             {
-                insertaTarjetaCmd = new OleDbCommand
+                insertaTarjetaCmd = new SQLiteCommand
                 {
                     CommandText = String.Format("INSERT INTO Tarjeta (TarjetaId, PersonalId) VALUES ('{0}', X)", idTarjeta),
                     Connection = dbConnection
                 };
             }
 
-            OleDbCommand selectComprovacionTarjetaCmd = new OleDbCommand
+            var selectComprovacionTarjetaCmd = new SQLiteCommand
             {
                 CommandType = CommandType.Text,
                 CommandText = String.Format("SELECT * FROM Tarjeta WHERE TarjetaId LIKE '{0}'", idTarjeta),
                 Connection = dbConnection
             };
 
-            OleDbCommand selectIdPersonalCmd = new OleDbCommand
+            var selectIdPersonalCmd = new SQLiteCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT TOP 1 * FROM Personal ORDER BY PersonalId DESC",
+                CommandText = "SELECT * FROM Personal ORDER BY PersonalId DESC LIMIT 1",
                 Connection = dbConnection
             };
             #endregion
@@ -685,7 +698,7 @@ namespace SistemaFichaje
 
                 // Comprueba que la tarjeta que se quiere 
                 // vincular no esté ya registrada
-                OleDbDataReader dataReaderTarjeta = selectComprovacionTarjetaCmd.ExecuteReader();
+                var dataReaderTarjeta = selectComprovacionTarjetaCmd.ExecuteReader();
 
                 if (dataReaderTarjeta.HasRows)
                 {
@@ -696,8 +709,8 @@ namespace SistemaFichaje
                 insertaPersonalCmd.ExecuteNonQuery();
 
                 // Después recoge el ID para poder insertarlo en las otras tablas
-                int idPersonal = -2;
-                OleDbDataReader dataReader = selectIdPersonalCmd.ExecuteReader();
+                var idPersonal = -2;
+                var dataReader = selectIdPersonalCmd.ExecuteReader();
                 while (dataReader.Read())
                 {
                     insertaHorarioCmd.CommandText = insertaHorarioCmd.CommandText.Replace("X", dataReader.GetValue(0).ToString());
@@ -741,7 +754,7 @@ namespace SistemaFichaje
         public static bool RegistroTarjeta(long idTarjeta, int idPersonal)
         {
 
-            String query = String.Format("INSERT INTO Tarjeta (TarjetaId, PersonalId) VALUES ({0},{1});",
+            var query = String.Format("INSERT INTO Tarjeta (TarjetaId, PersonalId) VALUES ({0},{1});",
                                         idTarjeta,
                                         idPersonal
                                         );
@@ -751,7 +764,7 @@ namespace SistemaFichaje
 
                 if (dbConnection.State != ConnectionState.Open)
                     dbConnection.Open();
-                OleDbCommand insertaTarjetaCmd = new OleDbCommand(query, dbConnection);
+                var insertaTarjetaCmd = new SQLiteCommand(query, dbConnection);
                 insertaTarjetaCmd.ExecuteNonQuery();
                 dbConnection.Close();
                 Console.WriteLine(dbConnection.State);
@@ -789,5 +802,64 @@ namespace SistemaFichaje
             }
         }
         #endregion
+        
+        private static void CrearSchema()
+        {
+            using (var connection = new SQLiteConnection(dbConnectionString))
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        string[] tableCommands = {
+                            @"CREATE TABLE Personal (
+                                PersonalId INTEGER PRIMARY KEY AUTOINCREMENT,
+                                PersonalNombre TEXT NOT NULL
+                            );",
+                            
+                            @"CREATE TABLE Tarjeta (
+                                TarjetaId TEXT PRIMARY KEY,
+                                PersonalId INTEGER,
+                                FOREIGN KEY(PersonalId) REFERENCES Personal(PersonalId) ON DELETE CASCADE
+                            );",
+
+                            @"CREATE TABLE Horario (
+                                PersonalId INTEGER PRIMARY KEY,
+                                NumHorasSemanales INTEGER,
+                                NumHorasAnuales INTEGER,
+                                FOREIGN KEY(PersonalId) REFERENCES Personal(PersonalId) ON DELETE CASCADE
+                            );",
+
+                            @"CREATE TABLE CalendarioLaboral (
+                                FechaFestivo DATETIME PRIMARY KEY
+                            );",
+
+                            @"CREATE TABLE Historial (
+                                HistorialId INTEGER PRIMARY KEY AUTOINCREMENT,
+                                PersonalId INTEGER,
+                                HistorialTimeStamp DATETIME,
+                                HistorialTipo INTEGER,
+                                FOREIGN KEY(PersonalId) REFERENCES Personal(PersonalId) ON DELETE CASCADE
+                            );"
+                        };
+
+                        foreach (var sql in tableCommands)
+                        {
+                            using (var command = new SQLiteCommand(sql, connection))
+                            {
+                                command.ExecuteNonQuery();
+                            }
+                        }
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        MessageBox.Show("Error al crear la base de datos inicial: " + ex.Message);
+                    }
+                }
+            }
+        }
     }
 }

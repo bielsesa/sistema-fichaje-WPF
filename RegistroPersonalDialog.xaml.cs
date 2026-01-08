@@ -21,7 +21,7 @@ namespace SistemaFichajeWPF
         public RegistroPersonalDialog()
         {
             InitializeComponent();
-            LectorTarjetas.LimpiaPantallaLCD();
+            LectorTarjetas.ClearScreen();
 
             // Timer para la label de información 
             timerLabel = new DispatcherTimer
@@ -68,11 +68,11 @@ namespace SistemaFichajeWPF
         #region BtLeerTarjeta_Click
         private async void BtLeerTarjeta_Click(object sender, EventArgs e)
         {
-            LectorTarjetas.MuestraMensajeLCD("Por favor, pase la tarjeta");
+            LectorTarjetas.ShowMessageOnScreen("Por favor, pase la tarjeta");
 
             CancellationTokenSource source = new CancellationTokenSource();
             source.CancelAfter(TimeSpan.FromSeconds(10)); // Timeout de 10 segundos
-            Task<long> leeTarjeta = Task.Run(() => LectorTarjetas.LecturaTarjeta(source.Token), source.Token);
+            Task<long> leeTarjeta = Task.Run(() => LectorTarjetas.ReadCard(source.Token), source.Token);
 
             btLeerTarjeta.IsEnabled = false;
 
@@ -80,25 +80,25 @@ namespace SistemaFichajeWPF
 
             source.Dispose();
 
-            if (AccessHelper.ExisteTarjeta(numTarjeta))
+            if (SQLiteDatabase.ExisteTarjeta(numTarjeta))
             {
                 tblNumTarjeta.Text = "Esta tarjeta ya está vinculada.";
-                LectorTarjetas.LimpiaPantallaLCD();
-                LectorTarjetas.MuestraMensajeLCD("Esta tarjeta ya está vinculada.");
+                LectorTarjetas.ClearScreen();
+                LectorTarjetas.ShowMessageOnScreen("Esta tarjeta ya está vinculada.");
                 LectorTarjetas.TimerLimpiaPantallaLCD();
             }
             else if (numTarjeta != -1)
             {
                 tblNumTarjeta.Text = numTarjeta.ToString();
-                LectorTarjetas.LimpiaPantallaLCD();
-                LectorTarjetas.MuestraMensajeLCD("Num Tarjeta: " + numTarjeta);
+                LectorTarjetas.ClearScreen();
+                LectorTarjetas.ShowMessageOnScreen("Num Tarjeta: " + numTarjeta);
                 LectorTarjetas.TimerLimpiaPantallaLCD();
             }
             else
             {
                 tblNumTarjeta.Text = "No se ha podido leer la tarjeta.";
-                LectorTarjetas.LimpiaPantallaLCD();
-                LectorTarjetas.MuestraMensajeLCD("No se ha podido leer la tarjeta.");
+                LectorTarjetas.ClearScreen();
+                LectorTarjetas.ShowMessageOnScreen("No se ha podido leer la tarjeta.");
                 LectorTarjetas.TimerLimpiaPantallaLCD();
             }
 

@@ -49,7 +49,7 @@ namespace SistemaFichajeWPF
         {
             InitializeComponent();
 
-            LectorTarjetas.LimpiaPantallaLCD();
+            LectorTarjetas.ClearScreen();
 
             #region Inicialización Timer
             // DispatcherTimer
@@ -60,8 +60,8 @@ namespace SistemaFichajeWPF
             timerLabel.Tick += TimerLabel_Tick;
             #endregion
 
-            _ListaTarjetas = AccessHelper.LeerDatosTarjetas();
-            _ListaPersonal = AccessHelper.LeerDatosPersonal(); 
+            _ListaTarjetas = SQLiteDatabase.LeerDatosTarjetas();
+            _ListaPersonal = SQLiteDatabase.LeerDatosPersonal(); 
 
             lvTarjetas.ItemsSource = ListaTarjetas;
             cbListaPersonal.ItemsSource = ListaPersonal;
@@ -83,7 +83,7 @@ namespace SistemaFichajeWPF
             if (selectedTarjeta != null)
             {
                 // Borra la tarjeta de la BD
-                if (AccessHelper.DesvinculaTarjeta(selectedTarjeta.Id))
+                if (SQLiteDatabase.DesvinculaTarjeta(selectedTarjeta.Id))
                 {
 
                     // Borra la tarjeta de la lista temporal
@@ -116,7 +116,7 @@ namespace SistemaFichajeWPF
         {
             CancellationTokenSource source = new CancellationTokenSource();
             source.CancelAfter(TimeSpan.FromSeconds(10)); // Timeout de 10 segundos
-            Task<long> leeTarjeta = Task.Run(() => LectorTarjetas.LecturaTarjeta(source.Token), source.Token);
+            Task<long> leeTarjeta = Task.Run(() => LectorTarjetas.ReadCard(source.Token), source.Token);
 
             btLeerTarjeta.IsEnabled = false;
 
@@ -152,10 +152,10 @@ namespace SistemaFichajeWPF
             }
             else
             {
-                if (AccessHelper.RegistroTarjeta(numTarjeta, idPersonal))
+                if (SQLiteDatabase.RegistroTarjeta(numTarjeta, idPersonal))
                 {
                     Tarjeta tarjeta = new Tarjeta(numTarjeta.ToString(), 
-                        new Personal(idPersonal, AccessHelper.NombreDePersonalConIDPersonal(idPersonal)));
+                        new Personal(idPersonal, SQLiteDatabase.NombreDePersonalConIDPersonal(idPersonal)));
 
                     ListaTarjetas.Add(tarjeta);
 
